@@ -1,25 +1,47 @@
 <template>
     <div class="input-wrap">
         <input type="text" v-model="todoState.todo" />
-        <button>Create</button>
+        <button @click="createToDo()">Create</button>
+        
 
     </div>
         <pre>{{ todoState.todo }}</pre>
 
+    <!-- <p v-if="todoState.invalid" class="err-msg">{{ todoState.errMsg }}</p> -->
+    <p v-show="todoState.invalid" class="err-msg">{{ todoState.errMsg }}</p>
 </template>
 
 <script>
-import { reactive, ref } from "vue";
+import { reactive, ref, defineEmits } from "vue";
+const emit = defineEmits(["createToDo"]);
 
 export default {
     data() {
         return {
             todoState: reactive({
-                todo: "Testing"
+                todo: "",
+                invalid: null,
+                errMsg : ""
             })
+
+             
         };
+    }, 
+    methods: {
+        createToDo() {
+             this.todoState.invalid = false;
+            if (this.todoState.todo !== "") {
+                this.$emit("createToDo", this.todoState.todo);
+                this.todoState.todo = "";
+                return;
+            }
+            this.todoState.invalid = true;
+            this.todoState.errMsg = "Todo is required";
+        }
     }
 };
+
+
 </script>
 
 <style lang="scss" scoped>
