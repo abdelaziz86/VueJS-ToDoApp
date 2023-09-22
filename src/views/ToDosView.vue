@@ -3,6 +3,8 @@ import { ref } from "vue";
 import ToDoCreator from "../components/ToDoCreator.vue";
 import { uid } from 'uid';
 import ToDoItem from "../components/ToDoItem.vue";
+import { Icon } from '@iconify/vue';
+
 const todoList = ref([]); 
 
 const createToDo = (todo) => {
@@ -15,17 +17,40 @@ const createToDo = (todo) => {
 
   console.log(todoList.value);
 }
+
+const toggleToDoComplete = (todoPos) => {
+  todoList.value[todoPos].isCompleted = !todoList.value[todoPos].isCompleted;
+}
+
+const toggleEditToDo = (todoPos) => {
+  todoList.value[todoPos].isEditing = !todoList.value[todoPos].isEditing;
+}
+
+const updateToDo = (todoVal, todoPos) => {
+  todoList.value[todoPos].todo = todoVal;
+}
+
+const deleteToDo = (todoId) => {
+  todoList.value = todoList.value.filter((todo) => todo.id !== todoId);
+} 
+
 </script>
 
 <template>
   <main> 
     <h1>Create To Do</h1>
     <ToDoCreator @create-to-do="createToDo"/>
-    <ul>
-      <ToDoItem v-for="todo in todoList" :todo="todo"/>
+    <ul class="todo-list" v-if="todoList.length > 0">
+      <ToDoItem v-for="(todo, index) in todoList" :todo="todo" :index="index" 
+        @toggle-complete="toggleToDoComplete"
+        @edit-todo="toggleEditToDo"
+        @update-todo="updateToDo"
+        @delete-todo="deleteToDo"
+      />
     </ul>
-    <p class="todos-msg">
-
+    <p class="todos-msg" v-else>
+      <Icon icon="noto-v1:sad-but-relieved-face" color="#531" />
+      <span>You don't have to do's !</span>
     </p>
   </main>
 </template>

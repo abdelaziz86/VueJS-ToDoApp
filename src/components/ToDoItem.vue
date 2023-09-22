@@ -1,16 +1,24 @@
 <template>
     <li>
-        <input type="checkbox" :checked="todo.isCompleted" /> 
+        <input type="checkbox" :checked="todo.isCompleted" @input="$emit('toggle-complete', index)" /> 
         <div class="todo">
-            <input v-if="todo.isEditing" type="text" :value="todo.todo">
-            <span v-else>
+            <input v-if="todo.isEditing" type="text" :value="todo.todo" 
+                @input="$emit('update-todo', $event.target.value, index )"
+            >
+            <span v-else :class="{'completed-todo' : todo.isCompleted}">
                 {{ todo.todo }}
             </span>
         </div>
         <div class="todo-actions">
-            <Icon v-if="todo.isEditing" icon="material-symbols:check-circle" class="icon" />
-            <Icon v-else icon="uil:edit" color="#531" />
-            <Icon icon="ph:trash-fill" color="#531" />
+            <Icon v-if="todo.isEditing" icon="material-symbols:check-circle" class="icon" 
+                @click="$emit('edit-todo', index)"
+            />
+            <Icon v-else icon="uil:edit" color="#531" 
+                @click="$emit('edit-todo', index)"
+            />
+            <Icon icon="ph:trash-fill" color="#531"
+                @click="$emit('delete-todo', todo.id)"
+            />
 
         </div>
     </li>
@@ -22,8 +30,14 @@ const props = defineProps({
     todo: {
         type: Object,
         required: true
+    },
+    index: {
+        type: Number,
+        required: true
     }
-})
+});
+
+defineEmits(["toggle-complete", "edit-todo", "update-todo", "delete-todo"]); 
 </script>
 
 <style lang="scss" scoped>
@@ -57,6 +71,10 @@ li {
 
     .todo {
         flex: 1;
+
+        .completed-todo {
+            text-decoration: line-through;
+        }
 
         input[type="text"] {
             width: 100%;
